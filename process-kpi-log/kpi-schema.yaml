@@ -1,0 +1,65 @@
+# KPI log - canonical schema.
+# Append-only log of measurements against a process, emitted by the `process-kpi-log` skill.
+# Two entry categories: performance and adoption/reuse. Both tie to a process, are dated, and sourced.
+
+entry:
+  process_name:            # ties back to the Process Intake Record
+    type: string
+    required: true
+  process_id:              # optional stable id
+    type: string
+  category:
+    type: enum
+    values: [performance, adoption_reuse]
+    required: true
+  as_of_date:              # ISO 8601 (YYYY-MM-DD), absolute
+    type: date
+    required: true
+  source:                  # where the number came from (report, system, survey) - required for audit
+    type: string
+    required: true
+  note:
+    type: string
+
+  # --- category: performance ---
+  performance:
+    kpi_name: string       # e.g. cycle_time, cost_per_unit, error_rate, rework_rate
+    value: number
+    unit: string
+    baseline_value: number # from the intake record, for trend
+    target: number         # from desired_outcome, for "% to target"
+    favorable_direction:   # which way is good, so "down"/"up" can't be misread
+      type: enum
+      values: [lower_is_better, higher_is_better]
+    trend:                 # computed
+      vs_prior_pct: number
+      vs_baseline_pct: number
+      direction:
+        type: enum
+        values: [up, down, flat]
+      pct_to_target: number
+
+  # --- category: adoption_reuse ---
+  adoption_reuse:
+    adoption_rate:         # share of the owning team actually using the new process
+      value_pct: number
+      basis: string        # e.g. "active users / total team", "runs using new flow / total runs"
+    reuse_count:           # # of other teams/areas that adopted the same optimization
+      type: integer
+    adopting_areas:
+      type: list
+      of: string
+    reusability_assessment:   # feeds the scale decision in process-improve
+      type: enum
+      values: [yes, partial, no]
+    reusability_rationale:
+      type: string
+    stickiness:            # is adoption sustained over time or decaying?
+      type: enum
+      values: [rising, sustained, decaying, unknown]
+
+rules:
+  - "Append-only. Never overwrite a prior reading - trends and audits depend on the full history."
+  - "Never fabricate a number. Record only measured readings; unknown baseline/target -> trend not computed."
+  - "Always name favorable_direction for a performance KPI (e.g. cycle_time is lower_is_better)."
+  - "A performance win with no adoption reading is incomplete - capture both categories over time."

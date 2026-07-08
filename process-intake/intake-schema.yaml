@@ -1,0 +1,174 @@
+# Process Intake Record - canonical schema.
+# One record per incoming process-optimization request. Emitted as JSON by the
+# `process-intake` skill; designed to load into an enterprise system of record.
+# Every field carries an entry in `extraction_confidence` (stated | inferred | missing)
+# so a reviewer can trust a fast first draft. The record is a DRAFT FOR HUMAN REVIEW,
+# not an unsupervised system of record (see review_audit).
+
+record:
+  process_name:            # short, human name for the process
+    type: string
+    required: true
+
+  source_type:             # where the request came from
+    type: enum
+    values: [interview_transcript, email, paste]
+    required: true
+  source_ref:              # file path / URL / "pasted"
+    type: string
+  captured_date:           # ISO 8601 (YYYY-MM-DD)
+    type: date
+    required: true
+
+  requesting_party:        # who raised the request
+    name: string
+    role: string
+  interested_parties:      # stakeholders with a stake in the outcome
+    type: list
+    of: { name: string, role: string, stake: string }
+  business_unit:
+    type: string
+
+  current_state_summary:   # how the work is done today (the "understand" step)
+    type: string
+    required: true
+
+  # --- process boundaries (many failures happen BETWEEN teams, not inside a step) ---
+  process_boundary:
+    trigger_event: string          # what kicks the process off
+    start_point: string
+    end_point: string
+    upstream_dependencies:
+      type: list
+      of: string
+    downstream_dependencies:
+      type: list
+      of: string
+    affected_teams:
+      type: list
+      of: string
+    systems_touched:
+      type: list
+      of: string
+    handoff_points:                # where work passes between teams/systems (common failure sites)
+      type: list
+      of: string
+    reusable_pattern_fit: string    # does this match a known reusable pattern / catalog entry?
+
+  baseline_metrics:        # existing key metrics (the "baseline" step). Empty is allowed + honest.
+    type: list
+    of:
+      metric: string
+      value: string
+      unit: string
+      source: string       # where the number came from
+
+  pain_points:             # points of failure / waste (the "find" step)
+    type: list
+    of: string
+
+  approval_chain:
+    approvers:
+      type: list
+      of: { role: string, purpose: string }
+    approver_count:
+      type: integer
+    flag_high_approver_count:   # true -> raise "why so many / what value does each add?" in open_questions
+      type: boolean
+
+  desired_outcome:
+    type: string
+    required: true
+  value_hypothesis:        # expected benefit in leadership terms - a hypothesis, not a promise
+    time_saved: string
+    cost_saved: string
+    quality_or_risk: string
+
+  governance:              # POPULATED FIRST. Unknown exposure -> open_questions, never default "none".
+    sox_controls:
+      touches_sox:
+        type: enum
+        values: [yes, no, unknown]
+      control_area: string
+    pii_or_privileged:
+      present:
+        type: enum
+        values: [yes, no, unknown]
+      data_types:
+        type: list
+        of: string        # e.g. employee_pii, customer_pii, phi, privileged, confidential_financial
+    other_regulatory:
+      type: list
+      of: string          # e.g. gdpr, data_residency, export_control, eu_ai_act, regulated_market, contractual
+    required_controls_to_confirm:   # which controls MUST be preserved before any step is removed
+      type: list
+      of: string
+
+  accountable_owner_candidate:      # one accountable owner, or "none identified - needs assignment"
+    type: string
+  local_champion:                   # inside-org sponsor to carry the change (or "none - flag")
+    type: string
+
+  # --- change management (adoption is EARNED; design the change, don't just measure it) ---
+  change_management:
+    stakeholder_groups:             # who is affected and how they'll react
+      type: list
+      of: { group: string, impact: string }
+    communications_needed: string
+    training_or_enablement_needed: string
+    resistance_risks:
+      type: list
+      of: string
+    handoff_plan: string            # how it transfers to the accountable owner
+    support_model_after_pilot: string
+
+  quick_win_flag:          # is there an obviously low-value step that is an elimination candidate?
+    present:
+      type: boolean
+    note: string
+
+  priority:
+    type: enum
+    values: [high, medium, low, unknown]
+  urgency_note:            # any hard deadline driving it
+    type: string
+
+  open_questions:          # ambiguities + unconfirmed governance, phrased as answerable questions
+    type: list
+    of: string
+
+  extraction_confidence:   # per-field provenance so a reviewer can trust the draft
+    type: map
+    key: field_name
+    value:
+      type: enum
+      values: [stated, inferred, missing]
+
+  suggested_next_step:
+    type: enum
+    values: [confirm_scope_with_requester, assign_accountable_owner, run_quick_win_pilot, schedule_deep_dive]
+
+  # --- reviewer & audit (this is a draft for human review, not an autonomous system of record) ---
+  review_audit:
+    data_classification:            # of the record itself
+      type: enum
+      values: [public, internal, confidential, restricted]
+    reviewed_by: string
+    reviewed_at: date
+    approval_status:
+      type: enum
+      values: [draft, in_review, approved, rejected]
+    approval_notes: string
+    source_evidence_refs:           # pointers back to the transcript/email spans that support the record
+      type: list
+      of: string
+    change_log:                     # append-only history of edits to this record
+      type: list
+      of: { at: date, by: string, change: string }
+
+rules:
+  - "Populate `governance` before any other extraction. Unknown exposure is an open_question, not 'no'."
+  - "Never fabricate. A field with no evidence is `missing` (and often an open_question), not a guess."
+  - "Understand the process (current_state + boundaries) and confirm required controls BEFORE proposing to remove or automate any step. Improvement follows understanding, not the reverse."
+  - "Use absolute dates. Resolve relative dates against captured_date."
+  - "This record is a proposal for human review (review_audit.approval_status starts at `draft`); it does not write to a system of record by itself."

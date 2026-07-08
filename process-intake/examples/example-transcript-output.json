@@ -1,0 +1,122 @@
+{
+  "process_name": "Application access provisioning",
+  "source_type": "interview_transcript",
+  "source_ref": "example-transcript.md",
+  "captured_date": "2026-07-08",
+  "requesting_party": { "name": "Marco", "role": "IT operations lead" },
+  "interested_parties": [
+    { "name": "Service desk", "role": "Request intake", "stake": "Takes and routes the request" },
+    { "name": "Application owners", "role": "App-level approval", "stake": "Own their applications" },
+    { "name": "Security team", "role": "Segregation-of-duties review", "stake": "Own access policy" },
+    { "name": "IT ops (Marco's team)", "role": "Provisioning", "stake": "Manually grants access" },
+    { "name": "Data governance", "role": "Sign-off (purpose unclear)", "stake": "Added step, possible duplicate of security" }
+  ],
+  "business_unit": "IT / Security operations",
+  "current_state_summary": "A user emails the service desk to request access to an application; a form is returned; the user selects roles; approvals run through manager -> application owner -> security (segregation-of-duties) -> a data-governance sign-off; an engineer then provisions access by hand in the target system. No periodic access review after the fact.",
+  "process_boundary": {
+    "trigger_event": "User needs access to an internal application",
+    "start_point": "Access request email to the service desk",
+    "end_point": "Access provisioned in the target system",
+    "upstream_dependencies": ["User's manager (approval)"],
+    "downstream_dependencies": ["Periodic access review / recertification (currently absent)"],
+    "affected_teams": ["Service desk", "Application owners", "Security", "IT ops", "Data governance"],
+    "systems_touched": ["Service desk / ticketing", "Target application(s)", "Identity/access system"],
+    "handoff_points": ["Service desk -> approvers", "Approvers -> security", "Security -> provisioning engineer"],
+    "reusable_pattern_fit": "Likely a reusable 'request -> approve -> provision -> recertify' access pattern across many applications"
+  },
+  "baseline_metrics": [
+    { "metric": "Cycle time (request to provisioned)", "value": "~6", "unit": "business days", "source": "requester estimate" },
+    { "metric": "Rework rate (wrong roles requested)", "value": "~25", "unit": "% of requests", "source": "requester estimate" },
+    { "metric": "Volume", "value": "~200", "unit": "access requests / month", "source": "requester estimate" }
+  ],
+  "pain_points": [
+    "Manual, email-driven approvals sit in inboxes (slow)",
+    "~25% of requests ask for the wrong roles and bounce back",
+    "Over-requesting + manual provisioning leads to excess access (audit exposure)",
+    "No periodic access review after provisioning ('once you're in, you're in')",
+    "No single owner across service desk, app owners, security, and IT ops"
+  ],
+  "approval_chain": {
+    "approvers": [
+      { "role": "Manager", "purpose": "Authorize the request" },
+      { "role": "Application owner", "purpose": "Approve app-level access" },
+      { "role": "Security", "purpose": "Segregation-of-duties review" },
+      { "role": "Data governance", "purpose": "Sign-off (purpose unclear - possible duplicate of security review)" }
+    ],
+    "approver_count": 4,
+    "flag_high_approver_count": true
+  },
+  "desired_outcome": "Access requests tied to predefined role bundles (prevents over-asking); automated segregation-of-duties checking; provisioning without manual keying; an auditable record. Cycle time cut from ~6 days to 1-2.",
+  "value_hypothesis": {
+    "time_saved": "~4-5 business days per request; less rework from role bundles",
+    "cost_saved": "Reduced manual provisioning effort across ~200 requests/month",
+    "quality_or_risk": "Lower audit exposure via least-privilege role bundles + automated SoD checks + an auditable trail and recertification"
+  },
+  "governance": {
+    "sox_controls": { "touches_sox": "yes", "control_area": "Access controls / segregation of duties (IT general controls) over systems holding financial data" },
+    "pii_or_privileged": { "present": "yes", "data_types": ["employee_pii", "customer_pii (systems in scope hold personal data)", "confidential_financial"] },
+    "other_regulatory": ["access_recertification", "audit_trail_requirements"],
+    "required_controls_to_confirm": [
+      "Segregation-of-duties review must be preserved in any streamlined flow",
+      "An auditable approval + provisioning trail must be retained",
+      "Least-privilege enforcement (role bundles) must not weaken existing control"
+    ]
+  },
+  "accountable_owner_candidate": "none identified - needs assignment (spans service desk, app owners, security, and IT ops)",
+  "local_champion": "Marco (IT ops lead) - willing to champion, but has no authority over security or app-owner teams",
+  "change_management": {
+    "stakeholder_groups": [
+      { "group": "Requesters/employees", "impact": "New self-service request via role bundles instead of free-text" },
+      { "group": "Approvers (managers, app owners)", "impact": "Fewer, clearer approvals; some steps may be automated" },
+      { "group": "Security team", "impact": "SoD moves from manual review to automated checks + exceptions" },
+      { "group": "IT ops", "impact": "Provisioning shifts from manual keying to automated with oversight" }
+    ],
+    "communications_needed": "Explain to each group why the change helps them (less waiting, less rework, cleaner audit), not just that it's happening.",
+    "training_or_enablement_needed": "Short enablement on requesting via role bundles; runbook for the automated SoD exceptions.",
+    "resistance_risks": [
+      "Security may resist automating SoD without confidence in the checks",
+      "App owners may feel loss of control over their approval step",
+      "The data-governance sign-off owner may resist removing that step"
+    ],
+    "handoff_plan": "Transfer to the assigned accountable owner once the pilot proves out, with runbooks and the audit trail in place.",
+    "support_model_after_pilot": "Defined support path for access issues + a recurring access-recertification cadence."
+  },
+  "quick_win_flag": {
+    "present": true,
+    "note": "The data-governance sign-off appears to duplicate the security segregation-of-duties review and was added at an unknown point - candidate to question and possibly remove (only after confirming it provides no distinct required control)."
+  },
+  "priority": "medium",
+  "urgency_note": "No hard deadline, but an access-review audit is expected later this year and the manual trail will not hold up well.",
+  "open_questions": [
+    "What distinct control, if any, does the data-governance sign-off provide beyond the security SoD review?",
+    "Exactly which applications are in scope, and which hold financial or personal data (drives control requirements)?",
+    "Is there any existing role-bundle / role-based-access model to build on, or is access purely free-text today?",
+    "What are the access-recertification requirements for the upcoming audit?",
+    "Who should be the single accountable owner across service desk, app owners, security, and IT ops?"
+  ],
+  "extraction_confidence": {
+    "process_name": "stated",
+    "current_state_summary": "stated",
+    "process_boundary": "inferred",
+    "baseline_metrics": "stated",
+    "approval_chain": "stated",
+    "desired_outcome": "stated",
+    "value_hypothesis": "inferred",
+    "governance.sox_controls": "inferred",
+    "governance.pii_or_privileged": "stated",
+    "accountable_owner_candidate": "stated",
+    "local_champion": "stated",
+    "change_management": "inferred",
+    "priority": "inferred"
+  },
+  "suggested_next_step": "confirm_scope_with_requester",
+  "review_audit": {
+    "data_classification": "internal",
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "approval_status": "draft",
+    "approval_notes": "Auto-extracted draft for human review; confirm the flagged governance items and open questions before acting.",
+    "source_evidence_refs": ["example-transcript.md (full intake call)"],
+    "change_log": [{ "at": "2026-07-08", "by": "process-intake", "change": "Initial draft extracted from intake transcript." }]
+  }
+}

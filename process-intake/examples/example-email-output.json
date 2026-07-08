@@ -1,0 +1,100 @@
+{
+  "process_name": "Expense report approval / reimbursement",
+  "source_type": "email",
+  "source_ref": "example-email.md",
+  "captured_date": "2026-07-08",
+  "requesting_party": { "name": "Priya Nair", "role": "Regional Sales Manager" },
+  "interested_parties": [
+    { "name": "Sales reps", "role": "Submitters", "stake": "Waiting weeks for reimbursement (morale)" },
+    { "name": "Approvers (unspecified)", "role": "Approval chain", "stake": "Some may be rubber-stamping" }
+  ],
+  "business_unit": "Sales (regional)",
+  "current_state_summary": "Reps submit expense reports that route through multiple approvers before reimbursement; the requester reports long delays (weeks) and believes several approval steps add no value. Exact steps and system are not described.",
+  "process_boundary": {
+    "trigger_event": "A rep submits an expense report",
+    "start_point": "Expense report submission",
+    "end_point": "Reimbursement paid",
+    "upstream_dependencies": ["unknown - not described"],
+    "downstream_dependencies": ["Payment / payroll or AP (implied, unconfirmed)"],
+    "affected_teams": ["Sales", "Approvers (unspecified)", "Finance/AP (implied)"],
+    "systems_touched": ["unknown - expense system not named"],
+    "handoff_points": ["Submitter -> approvers -> payment (details unknown)"],
+    "reusable_pattern_fit": "Likely a common 'submit -> approve -> pay' pattern, but cannot confirm without the actual steps"
+  },
+  "baseline_metrics": [],
+  "pain_points": [
+    "Approval takes weeks; reps wait a long time to be reimbursed (morale impact)",
+    "Too many approvers; some appear to be rubber-stamping"
+  ],
+  "approval_chain": {
+    "approvers": [],
+    "approver_count": null,
+    "flag_high_approver_count": true
+  },
+  "desired_outcome": "Faster approvals / reimbursement. Requester said the fix does not need to be a big overhaul - it just needs to move faster.",
+  "value_hypothesis": {
+    "time_saved": "Reduced approval cycle time (currently 'weeks' per requester)",
+    "cost_saved": "unknown - no cost/effort baseline provided",
+    "quality_or_risk": "Improved employee morale / satisfaction"
+  },
+  "governance": {
+    "sox_controls": { "touches_sox": "yes", "control_area": "Expense approval is typically a spend/authorization control - confirm the applicable policy and thresholds" },
+    "pii_or_privileged": { "present": "unknown", "data_types": ["employee_pii (likely - names, expense/payment details); confirm"] },
+    "other_regulatory": [],
+    "required_controls_to_confirm": [
+      "Confirm which approval steps are policy-mandated spend controls (must NOT be removed) vs. discretionary before streamlining"
+    ]
+  },
+  "accountable_owner_candidate": "none identified - needs assignment",
+  "local_champion": "Priya Nair (requester) - offered to help",
+  "change_management": {
+    "stakeholder_groups": [
+      { "group": "Sales reps", "impact": "Faster reimbursement; possibly a changed submission flow" },
+      { "group": "Approvers", "impact": "Some approval steps may be removed/automated - potential resistance" }
+    ],
+    "communications_needed": "unknown - depends on the redesign; capture once steps are known",
+    "training_or_enablement_needed": "unknown",
+    "resistance_risks": ["Approvers who lose a step may resist; confirm which steps are truly discretionary"],
+    "handoff_plan": "unknown - no owner yet",
+    "support_model_after_pilot": "unknown"
+  },
+  "quick_win_flag": {
+    "present": true,
+    "note": "Requester reports approvers who 'rubber-stamp' - a likely candidate to remove low-value approval steps, pending the actual step-by-step and confirmation of required spend controls."
+  },
+  "priority": "unknown",
+  "urgency_note": "No hard deadline stated; framed as an ongoing morale problem.",
+  "open_questions": [
+    "What are the actual approval steps today, and who is each approver? (No specifics were given.)",
+    "What system is used for expense reports (needed to assess options)?",
+    "What is the real baseline cycle time and volume? ('Weeks' is anecdotal - capture the number.)",
+    "Which approval steps are policy-mandated spend controls vs. discretionary? (Do NOT remove a required control.)",
+    "Does the process handle employee PII / payment data, and where is it stored?",
+    "Who should own the end-to-end expense-approval process?"
+  ],
+  "extraction_confidence": {
+    "process_name": "stated",
+    "current_state_summary": "inferred",
+    "process_boundary": "inferred",
+    "baseline_metrics": "missing",
+    "approval_chain": "missing",
+    "desired_outcome": "stated",
+    "value_hypothesis": "inferred",
+    "governance.sox_controls": "inferred",
+    "governance.pii_or_privileged": "missing",
+    "accountable_owner_candidate": "missing",
+    "local_champion": "stated",
+    "change_management": "missing",
+    "priority": "missing"
+  },
+  "suggested_next_step": "confirm_scope_with_requester",
+  "review_audit": {
+    "data_classification": "internal",
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "approval_status": "draft",
+    "approval_notes": "Sparse request - most fields are missing by design; do not fabricate. Confirm the open questions with the requester before scoping.",
+    "source_evidence_refs": ["example-email.md"],
+    "change_log": [{ "at": "2026-07-08", "by": "process-intake", "change": "Initial draft extracted from request email; many fields intentionally left missing." }]
+  }
+}

@@ -1,0 +1,92 @@
+{
+  "process_name": "Application access provisioning",
+  "process_id": "access-provisioning",
+  "note": "Synthetic append-only log for the access-provisioning process from the intake example. Baseline cycle time ~6 business days; target 2. Shows performance improving toward target AND adoption/reuse growing over three monthly readings.",
+  "entries": [
+    {
+      "category": "performance",
+      "as_of_date": "2026-04-30",
+      "source": "Access/ticketing system report (April)",
+      "performance": {
+        "kpi_name": "cycle_time",
+        "value": 5.0,
+        "unit": "business_days",
+        "baseline_value": 6,
+        "target": 2,
+        "favorable_direction": "lower_is_better",
+        "trend": { "vs_prior_pct": null, "vs_baseline_pct": -17, "direction": "down", "pct_to_target": 25 }
+      },
+      "note": "First reading after pilot launch (predefined role bundles for one application)."
+    },
+    {
+      "category": "adoption_reuse",
+      "as_of_date": "2026-04-30",
+      "source": "Access system usage report (April)",
+      "adoption_reuse": {
+        "adoption_rate": { "value_pct": 35, "basis": "role-bundle requests / total access requests" },
+        "reuse_count": 0,
+        "adopting_areas": [],
+        "reusability_assessment": "partial",
+        "reusability_rationale": "Works for the pilot application's standard roles; privileged/admin access still handled manually.",
+        "stickiness": "rising"
+      }
+    },
+    {
+      "category": "performance",
+      "as_of_date": "2026-05-31",
+      "source": "Access/ticketing system report (May)",
+      "performance": {
+        "kpi_name": "cycle_time",
+        "value": 3.5,
+        "unit": "business_days",
+        "baseline_value": 6,
+        "target": 2,
+        "favorable_direction": "lower_is_better",
+        "trend": { "vs_prior_pct": -30, "vs_baseline_pct": -42, "direction": "down", "pct_to_target": 63 }
+      },
+      "note": "Rework rate also dropping - role bundles prevent most wrong-role requests before they're submitted."
+    },
+    {
+      "category": "adoption_reuse",
+      "as_of_date": "2026-05-31",
+      "source": "Access system usage report (May)",
+      "adoption_reuse": {
+        "adoption_rate": { "value_pct": 72, "basis": "role-bundle requests / total access requests" },
+        "reuse_count": 1,
+        "adopting_areas": ["Application Y access"],
+        "reusability_assessment": "partial",
+        "reusability_rationale": "A second application adopted the same request-approve-provision pattern with only role-bundle changes; privileged access still open.",
+        "stickiness": "rising"
+      }
+    },
+    {
+      "category": "performance",
+      "as_of_date": "2026-06-30",
+      "source": "Access/ticketing system report (June)",
+      "performance": {
+        "kpi_name": "cycle_time",
+        "value": 2.3,
+        "unit": "business_days",
+        "baseline_value": 6,
+        "target": 2,
+        "favorable_direction": "lower_is_better",
+        "trend": { "vs_prior_pct": -34, "vs_baseline_pct": -62, "direction": "down", "pct_to_target": 93 }
+      },
+      "note": "Approaching target. The redundant data-governance sign-off was removed after confirming it duplicated the security segregation-of-duties review (no control lost), taking ~1 day out of the chain."
+    },
+    {
+      "category": "adoption_reuse",
+      "as_of_date": "2026-06-30",
+      "source": "Access system usage report (June)",
+      "adoption_reuse": {
+        "adoption_rate": { "value_pct": 91, "basis": "role-bundle requests / total access requests" },
+        "reuse_count": 2,
+        "adopting_areas": ["Application Y access", "Application Z access"],
+        "reusability_assessment": "yes",
+        "reusability_rationale": "Templated the request -> automated SoD check -> provision -> recertify pattern; two other applications adopted it. Candidate to scale enterprise-wide (see process-improve).",
+        "stickiness": "sustained"
+      }
+    }
+  ],
+  "readout": "cycle_time: 2.3 business_days as of 2026-06-30 - DOWN 62% vs baseline (6 -> 2.3), 93% of the way to the 2-day target. adoption_rate: 91% (rising -> sustained), reuse_count: 2 other applications. Reusability now 'yes' -> flag for enterprise scale."
+}
