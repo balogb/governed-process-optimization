@@ -1,0 +1,144 @@
+{
+  "process_name": "Customer refund / goodwill credit issuance",
+  "source_type": "email",
+  "source_ref": "input-refund-approval-email.md",
+  "captured_date": "2026-07-08",
+  "requesting_party": { "name": "Dana Whitfield", "role": "Customer Support Manager" },
+  "interested_parties": [
+    { "name": "Support agents", "role": "Submitters", "stake": "Want authority to issue small credits directly; blocked by the chain" },
+    { "name": "Finance", "role": "Approver / processor", "stake": "Processes the refund in NetSuite; owns the financial control" },
+    { "name": "Controller", "role": "Approver", "stake": "Sign-off authority; may hold a required SOX control" },
+    { "name": "Director", "role": "Conditional approver (> $500)", "stake": "High-value authorization" },
+    { "name": "Customers (incl. enterprise + EU)", "role": "Beneficiaries", "stake": "Waiting a week+ for money back; CSAT falling" }
+  ],
+  "business_unit": "Customer Support",
+  "current_state_summary": "When a customer is owed a refund or goodwill credit, the request routes through a chain - support lead -> finance -> controller, plus a director for amounts over $500 - before the refund is processed in NetSuite. Tickets originate in Zendesk. The requester reports the chain takes 'a week or more' even for small credits and believes several steps add no value ('rubber stamps'). Exact volumes, cycle time, and the specific purpose of each approval step are not described.",
+  "process_boundary": {
+    "trigger_event": "A customer is determined to be owed a refund or goodwill credit (via a support ticket)",
+    "start_point": "Refund/credit request raised in Zendesk",
+    "end_point": "Refund/credit processed (paid) in NetSuite",
+    "upstream_dependencies": ["Support ticket / issue that establishes the customer is owed money (Zendesk)"],
+    "downstream_dependencies": ["Payment/disbursement in NetSuite", "Customer notification (implied, unconfirmed)", "Revenue/AR and general-ledger impact (implied)"],
+    "affected_teams": ["Customer Support", "Finance", "Controller / accounting", "Leadership (director, for > $500)"],
+    "systems_touched": ["Zendesk (ticketing)", "NetSuite (financial processing)"],
+    "handoff_points": ["Agent -> support lead", "Support lead -> finance", "Finance -> controller", "Controller -> director (only when > $500)", "Approval -> NetSuite processing"],
+    "reusable_pattern_fit": "Resembles a common 'request -> tiered approval -> disburse' financial pattern, but cannot confirm reuse fit without the actual step definitions and control purposes"
+  },
+  "baseline_metrics": [
+    { "metric": "monthly volume", "value": "a few hundred", "unit": "refunds/credits per month", "source": "requester estimate (anecdotal - 'I don't have the exact number')" },
+    { "metric": "cycle time", "value": "a week or more", "unit": "elapsed time (submission to paid)", "source": "requester anecdote - not measured" }
+  ],
+  "pain_points": [
+    "Cycle time is 'a week or more' even for very small credits (e.g. $15) - customers wait a long time for money back",
+    "CSAT has declined over two quarters, attributed to refund delays",
+    "Multiple approval layers; some appear to be rubber stamps that add no distinct control",
+    "Support agents have no authority to issue even small credits, forcing every case through the full chain",
+    "High back-and-forth / rework in the approval loop (implied by 'a lot of back and forth')"
+  ],
+  "approval_chain": {
+    "approvers": [
+      { "role": "Support lead", "purpose": "unknown - not stated; confirm what this step validates" },
+      { "role": "Finance", "purpose": "processes the refund in NetSuite; likely a required financial control" },
+      { "role": "Controller", "purpose": "unknown - possibly a required accounting/SOX sign-off; confirm" },
+      { "role": "Director", "purpose": "authorizes amounts over $500 (conditional step)" }
+    ],
+    "approver_count": 4,
+    "flag_high_approver_count": true
+  },
+  "desired_outcome": "Faster refunds/credits - reduce the approval cycle time, ideally by letting support agents issue small credits directly. Requester was explicit that a lightweight fix is acceptable ('I don't need it gold-plated, I just need it to move faster').",
+  "value_hypothesis": {
+    "time_saved": "Materially reduced refund cycle time (from 'a week or more' toward same-day for small credits) - quantify once baseline is captured",
+    "cost_saved": "unknown - no effort/cost baseline provided; removing rubber-stamp steps would free approver time (not yet quantified)",
+    "quality_or_risk": "Improved CSAT / customer retention; RISK must be preserved - refund authorization is a financial control, so speed cannot come at the cost of removing a required SOX/segregation-of-duties control"
+  },
+  "governance": {
+    "sox_controls": {
+      "touches_sox": "yes",
+      "control_area": "Outbound customer refunds/credits are financial disbursements affecting revenue/AR - approval authority over them is typically a SOX delegation-of-authority / segregation-of-duties control. The $500 director threshold is itself a spend-authorization control. Confirm the applicable policy and dollar thresholds before removing any step."
+    },
+    "pii_or_privileged": {
+      "present": "yes",
+      "data_types": ["customer_pii (names, contact, account)", "customer_billing/payment data (inferred - refunds processed in NetSuite); confirm whether card/PCI data is in scope"]
+    },
+    "other_regulatory": [
+      "gdpr / eu_data - requester notes 'a couple went to customers in the EU'; confirm whether EU customer personal/payment data is processed and where it is stored (data residency)",
+      "pci_dss - possible if card payment data is touched in the refund path; confirm",
+      "contractual - some refunds are for 'enterprise customers under contract'; contractual credit terms / SLAs may govern how and how fast these are handled"
+    ],
+    "required_controls_to_confirm": [
+      "Which approval steps are policy-mandated financial controls (SOX delegation-of-authority / segregation of duties) vs. discretionary - do NOT remove a required control",
+      "What the compliant dollar threshold is for agent-issued credits without secondary approval",
+      "Whether PCI-DSS applies to any card data in the refund path",
+      "Whether EU customer data triggers GDPR/data-residency handling"
+    ]
+  },
+  "accountable_owner_candidate": "none identified - needs assignment (spans Support, Finance, and Controller/accounting)",
+  "local_champion": "Dana Whitfield (requester) - motivated to sponsor the change on the Support side",
+  "change_management": {
+    "stakeholder_groups": [
+      { "group": "Support agents", "impact": "Would gain authority to issue small credits directly - needs a clear threshold, training, and guardrails" },
+      { "group": "Finance / Controller", "impact": "May lose or have automated some approval steps - potential resistance; must retain required controls and audit trail" },
+      { "group": "Director", "impact": "Removed from small-refund path if threshold is well set - likely welcome" }
+    ],
+    "communications_needed": "unknown - depends on the redesign; at minimum a policy note on the new agent credit threshold and what controls remain",
+    "training_or_enablement_needed": "Agent enablement on the new self-service credit limit, when to escalate, and how the audit trail is preserved (specifics TBD)",
+    "resistance_risks": [
+      "Finance/Controller may resist ceding approval authority if the control rationale isn't preserved",
+      "Risk of over-correcting - removing a step that turns out to be a required SOX control"
+    ],
+    "handoff_plan": "unknown - no accountable owner assigned yet",
+    "support_model_after_pilot": "unknown"
+  },
+  "quick_win_flag": {
+    "present": true,
+    "note": "A dollar-thresholded agent self-service credit (e.g. small goodwill credits issued directly, with the existing chain retained above the threshold) is a plausible quick win - but ONLY after confirming which approval steps are required financial controls. The 'rubber stamp' steps the requester describes are candidates for removal pending that confirmation."
+  },
+  "priority": "unknown",
+  "urgency_note": "No hard deadline, but framed as an ongoing and worsening problem (CSAT sliding for two quarters).",
+  "open_questions": [
+    "What is the exact monthly volume of refunds/credits, and the real cycle time (submission to paid)? ('A few hundred' and 'a week or more' are anecdotal - capture the numbers from Zendesk/NetSuite.)",
+    "What does each approval step actually validate, and which are policy-mandated SOX/segregation-of-duties controls vs. discretionary?",
+    "What dollar threshold for agent-issued credits would be compliant with the delegation-of-authority policy?",
+    "Is card/PCI payment data touched anywhere in the refund path, and if so where is it stored/processed?",
+    "Do any refunds involve EU customer personal or payment data (GDPR / data residency)?",
+    "Do enterprise contracts impose specific refund/credit terms or SLAs that the process must honor?",
+    "Who should own the end-to-end refund/credit process across Support, Finance, and Controller?",
+    "What is the current rework/back-and-forth rate, and where in the chain does it occur?"
+  ],
+  "extraction_confidence": {
+    "process_name": "stated",
+    "requesting_party": "stated",
+    "current_state_summary": "inferred",
+    "process_boundary": "inferred",
+    "baseline_metrics": "inferred",
+    "pain_points": "stated",
+    "approval_chain": "inferred",
+    "desired_outcome": "stated",
+    "value_hypothesis": "inferred",
+    "governance.sox_controls": "inferred",
+    "governance.pii_or_privileged": "inferred",
+    "governance.other_regulatory": "inferred",
+    "accountable_owner_candidate": "missing",
+    "local_champion": "stated",
+    "change_management": "inferred",
+    "quick_win_flag": "inferred",
+    "priority": "missing"
+  },
+  "suggested_next_step": "confirm_scope_with_requester",
+  "review_audit": {
+    "data_classification": "internal",
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "approval_status": "draft",
+    "approval_notes": "Governance-heavy request: SOX financial control, possible PCI, GDPR/EU, and contractual terms all in play. The quick win (agent self-service credit) is real but MUST be gated on confirming which approvals are required controls. Do not remove any step before the open questions are answered.",
+    "source_evidence_refs": [
+      "input-refund-approval-email.md: 'support lead, then finance, then the controller, and if it's over $500 a director has to sign off'",
+      "input-refund-approval-email.md: 'half of these approvals feel like rubber stamps'",
+      "input-refund-approval-email.md: 'a couple went to customers in the EU last month, not sure if that matters'",
+      "input-refund-approval-email.md: 'enterprise customers under contract'"
+    ],
+    "change_log": [
+      { "at": "2026-07-08", "by": "process-intake", "change": "Initial draft extracted from request email; governance flagged first; volumes/cycle-time captured as anecdotal and routed to open questions for exact measurement." }
+    ]
+  }
+}

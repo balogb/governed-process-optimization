@@ -1,0 +1,64 @@
+{
+  "process_name": "Customer refund / goodwill credit issuance",
+  "process_id": "refund-credit-issuance",
+  "note": "Synthetic append-only log for the refund process from the intake record. After the open questions were answered, the required SOX controls were confirmed and a pilot launched: support agents may issue goodwill credits up to $50 directly (fully logged in NetSuite for audit); the finance/controller chain is retained above $50, and the director threshold above $500 is unchanged. Baseline cycle time ~7 business days; target ~1. Two monthly readings after pilot launch.",
+  "entries": [
+    {
+      "category": "performance",
+      "as_of_date": "2026-08-31",
+      "source": "Zendesk + NetSuite refund report (August)",
+      "performance": {
+        "kpi_name": "cycle_time",
+        "value": 3.2,
+        "unit": "business_days",
+        "baseline_value": 7,
+        "target": 1,
+        "favorable_direction": "lower_is_better",
+        "trend": { "vs_prior_pct": null, "vs_baseline_pct": -54, "direction": "down", "pct_to_target": 63 }
+      },
+      "note": "First reading after pilot launch. Small credits (<= $50) now issued at first touch; the week-plus cases are now only the larger, control-required refunds."
+    },
+    {
+      "category": "adoption_reuse",
+      "as_of_date": "2026-08-31",
+      "source": "NetSuite agent-credit log (August)",
+      "adoption_reuse": {
+        "adoption_rate": { "value_pct": 48, "basis": "credits issued via agent self-service / all eligible (<= $50) credits" },
+        "reuse_count": 0,
+        "adopting_areas": [],
+        "reusability_assessment": "partial",
+        "reusability_rationale": "Pattern (thresholded self-service + retained control above the line) is portable, but only Support has adopted it so far.",
+        "stickiness": "rising"
+      }
+    },
+    {
+      "category": "performance",
+      "as_of_date": "2026-09-30",
+      "source": "Zendesk + NetSuite refund report (September)",
+      "performance": {
+        "kpi_name": "cycle_time",
+        "value": 1.4,
+        "unit": "business_days",
+        "baseline_value": 7,
+        "target": 1,
+        "favorable_direction": "lower_is_better",
+        "trend": { "vs_prior_pct": -56, "vs_baseline_pct": -80, "direction": "down", "pct_to_target": 93 }
+      },
+      "note": "Approaching target. The redundant support-lead pre-check was removed after confirming it duplicated finance's control (no SOX control lost); the controller sign-off was retained as a required control."
+    },
+    {
+      "category": "adoption_reuse",
+      "as_of_date": "2026-09-30",
+      "source": "NetSuite agent-credit log (September)",
+      "adoption_reuse": {
+        "adoption_rate": { "value_pct": 86, "basis": "credits issued via agent self-service / all eligible (<= $50) credits" },
+        "reuse_count": 1,
+        "adopting_areas": ["Billing disputes team (same thresholded pattern)"],
+        "reusability_assessment": "yes",
+        "reusability_rationale": "A second team adopted the thresholded self-service + retained-control pattern with only a policy/threshold change. Candidate to scale (see process-improve).",
+        "stickiness": "sustained"
+      }
+    }
+  ],
+  "readout": "cycle_time: 1.4 business_days as of 2026-09-30 - DOWN 80% vs baseline (7 -> 1.4), 93% of the way to the 1-day target. adoption_rate: 86% (rising -> sustained), reuse_count: 1 other team. Reusability now 'yes' -> flag for scale. Governance preserved: required SOX/controller control retained; only a duplicated pre-check was removed."
+}
